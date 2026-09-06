@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { playSound, unlockAudio } from '../lib/audio';
-import { notifyStepDone } from '../lib/notify';
-import { breakAfterFocus, durationFor } from '../lib/session';
+import { SESSION_DONE_MESSAGE, notify, notifyStepDone } from '../lib/notify';
+import { breakAfterFocus, durationFor, planSession, type SessionPlan } from '../lib/session';
 import type { Mode, Settings } from '../types';
 
 const TICK_MS = 250;
@@ -18,6 +18,11 @@ interface Engine {
   remaining: number;
   /** focus terminés dans le cycle courant (les graines) */
   completed: number;
+  /** focus terminés depuis le début de la session */
+  focusDone: number;
+  /** secondes consommées par les étapes déjà closes */
+  elapsedBefore: number;
+  sessionDone: boolean;
   /** horodatage de fin de l'étape, null quand le minuteur est à l'arrêt */
   endAt: number | null;
 }
@@ -29,6 +34,11 @@ export interface PomodoroState {
   /** durée totale de l'étape en cours, en secondes */
   stepTotal: number;
   completed: number;
+  focusDone: number;
+  /** secondes consommées dans la session, étape en cours comprise */
+  sessionElapsed: number;
+  sessionDone: boolean;
+  plan: SessionPlan | null;
 }
 
 export interface PomodoroActions {
@@ -36,6 +46,7 @@ export interface PomodoroActions {
   resetStep: () => void;
   skip: () => void;
   selectMode: (mode: Mode) => void;
+  newSession: () => void;
 }
 
 function secondsLeft(endAt: number): number {
@@ -43,15 +54,22 @@ function secondsLeft(endAt: number): number {
 }
 
 export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions {
-  // miroir synchrone : le moteur tourne dans des callbacks stables
+  const plan = useMemo(() => planSession(settings), [settings]);
+
+  // miroirs synchrones : le moteur tourne dans des callbacks stables
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
+  const planRef = useRef(plan);
+  planRef.current = plan;
 
   const engineRef = useRef<Engine>({
     mode: 'focus',
     running: false,
     remaining: durationFor('focus', settings),
     completed: 0,
+    focusDone: 0,
+    elapsedBefore: 0,
+    sessionDone: false,
     endAt: null,
   });
 
@@ -66,17 +84,32 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
     engine.running = autostart;
   }, []);
 
-  /** Clôture l'étape en cours puis enchaîne sur la suivante. */
+  /** Clôture l'étape en cours puis enchaîne, ou termine la session. */
   const finish = useCallback(
-    () => {
+    (consumedSeconds: number) => {
       const engine = engineRef.current;
       const current = settingsRef.current;
       const finished = engine.mode;
 
       playSound(current.sound, current.vol);
 
-      if (finished === 'focus') engine.completed += 1;
-      else if (finished === 'long') engine.completed = 0;
+      engine.elapsedBefore += consumedSeconds;
+      if (finished === 'focus') {
+        engine.focusDone += 1;
+        engine.completed += 1;
+      } else if (finished === 'long') {
+        engine.completed = 0;
+      }
+
+      const sessionPlan = planRef.current;
+      if (sessionPlan !== null && engine.focusDone >= sessionPlan.focusCount) {
+        notify(SESSION_DONE_MESSAGE, current.notif);
+        engine.running = false;
+        engine.endAt = null;
+        engine.remaining = 0;
+        engine.sessionDone = true;
+        return;
+      }
 
       notifyStepDone(finished, current.notif);
 
@@ -94,7 +127,7 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
     engine.remaining = secondsLeft(engine.endAt);
 
     if (engine.remaining <= 0) {
-      finish();
+      finish(durationFor(engine.mode, settingsRef.current));
       commit();
       return;
     }
@@ -115,7 +148,7 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
     previousDurations.current = durationsKey;
 
     const engine = engineRef.current;
-    if (engine.running) return;
+    if (engine.running || engine.sessionDone) return;
     engine.remaining = durationFor(engine.mode, settingsRef.current);
     commit();
   }, [commit, durationsKey]);
@@ -143,8 +176,11 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
   }, [commit]);
 
   const skip = useCallback(() => {
-    engineRef.current.endAt = null;
-    finish();
+    const engine = engineRef.current;
+    const total = durationFor(engine.mode, settingsRef.current);
+    const left = engine.endAt === null ? engine.remaining : secondsLeft(engine.endAt);
+    engine.endAt = null;
+    finish(total - left);
     commit();
   }, [commit, finish]);
 
@@ -156,7 +192,20 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
     [commit, openStep],
   );
 
+  const newSession = useCallback(() => {
+    const engine = engineRef.current;
+    engine.completed = 0;
+    engine.focusDone = 0;
+    engine.elapsedBefore = 0;
+    engine.sessionDone = false;
+    openStep('focus', durationFor('focus', settingsRef.current), false);
+    commit();
+  }, [commit, openStep]);
+
   const stepTotal = durationFor(snapshot.mode, settings);
+  const sessionElapsed = snapshot.sessionDone
+    ? snapshot.elapsedBefore
+    : snapshot.elapsedBefore + (stepTotal - snapshot.remaining);
 
   return {
     mode: snapshot.mode,
@@ -164,9 +213,14 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
     remaining: snapshot.remaining,
     stepTotal,
     completed: snapshot.completed,
+    focusDone: snapshot.focusDone,
+    sessionElapsed,
+    sessionDone: snapshot.sessionDone,
+    plan,
     toggle,
     resetStep,
     skip,
     selectMode,
+    newSession,
   };
 }

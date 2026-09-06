@@ -24,10 +24,16 @@ describe('loadSettings', () => {
   });
 
   it('borne les valeurs hors limites', () => {
-    saveSettings({ ...DEFAULT_SETTINGS, focus: 999, vol: 12 });
+    saveSettings({ ...DEFAULT_SETTINGS, focus: 999, sessionLimit: -30, vol: 12 });
     const loaded = loadSettings();
     expect(loaded.focus).toBe(120);
+    expect(loaded.sessionLimit).toBe(0);
     expect(loaded.vol).toBe(1);
+  });
+
+  it('conserve une session personnalisée', () => {
+    saveSettings({ ...DEFAULT_SETTINGS, sessionLimit: 240 });
+    expect(loadSettings().sessionLimit).toBe(240);
   });
 
   it('ne restaure pas un son importé, perdu au redémarrage', () => {

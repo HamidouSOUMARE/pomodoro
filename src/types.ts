@@ -11,6 +11,8 @@ export interface Settings {
   long: number;
   /** nombre de focus avant la grande pause */
   cycles: number;
+  /** enveloppe totale de la session en minutes — 0 = illimitée */
+  sessionLimit: number;
   /** enchaîner automatiquement les étapes */
   auto: boolean;
   /** notification système en fin d'étape */
@@ -25,6 +27,7 @@ export const DEFAULT_SETTINGS: Settings = {
   short: 5,
   long: 15,
   cycles: 4,
+  sessionLimit: 180,
   auto: true,
   notif: false,
   sound: 'bell',
@@ -37,4 +40,5 @@ export const LIMITS = {
   short: { min: 1, max: 60 },
   long: { min: 1, max: 90 },
   cycles: { min: 2, max: 8 },
+  sessionLimit: { min: 0, max: 720, step: 15 },
 } as const;

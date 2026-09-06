@@ -1,5 +1,6 @@
 import { useId, useState, type ChangeEvent } from 'react';
 import { hasCustomSound, loadCustomSound, playSound, unlockAudio } from '../lib/audio';
+import { describePlan, formatMinutes, planSession } from '../lib/session';
 import { requestNotificationPermission } from '../lib/notify';
 import { LIMITS, type Settings, type SoundName } from '../types';
 import styles from './SettingsPanel.module.css';
@@ -58,9 +59,53 @@ function NumberField({ label, hint, value, min, max, onChange }: NumberFieldProp
   );
 }
 
+interface StepperProps {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  format: (value: number) => string;
+  onChange: (value: number) => void;
+}
+
+function Stepper({ label, value, min, max, step, format, onChange }: StepperProps) {
+  const clamp = (next: number) => Math.min(max, Math.max(min, next));
+
+  return (
+    <div className={styles.stepperBlock}>
+      <span id={`${label}-label`}>{label}</span>
+      <div className={styles.stepper} role="group" aria-labelledby={`${label}-label`}>
+        <button
+          type="button"
+          className={styles.mini}
+          onClick={() => onChange(clamp(value - step))}
+          disabled={value <= min}
+          aria-label={`Diminuer ${label.toLowerCase()}`}
+        >
+          −
+        </button>
+        <span className={styles.stepperValue} aria-live="polite">
+          {format(value)}
+        </span>
+        <button
+          type="button"
+          className={styles.mini}
+          onClick={() => onChange(clamp(value + step))}
+          disabled={value >= max}
+          aria-label={`Augmenter ${label.toLowerCase()}`}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function SettingsPanel({ settings, onChange }: SettingsPanelProps) {
   const [soundFileLabel, setSoundFileLabel] = useState('Tu peux importer ton propre son (mp3/wav).');
   const [customLoaded, setCustomLoaded] = useState(hasCustomSound);
+  const plan = planSession(settings);
 
   const handleNotif = (event: ChangeEvent<HTMLInputElement>) => {
     onChange('notif', event.target.checked);
@@ -116,6 +161,19 @@ export function SettingsPanel({ settings, onChange }: SettingsPanelProps) {
         max={LIMITS.cycles.max}
         onChange={(value) => onChange('cycles', value)}
       />
+
+      <div className={styles.divider} />
+
+      <Stepper
+        label="Durée totale de la session"
+        value={settings.sessionLimit}
+        min={LIMITS.sessionLimit.min}
+        max={LIMITS.sessionLimit.max}
+        step={LIMITS.sessionLimit.step}
+        format={(value) => (value === 0 ? 'Illimitée' : formatMinutes(value))}
+        onChange={(value) => onChange('sessionLimit', value)}
+      />
+      <span className={styles.note}>{describePlan(plan, settings)}</span>
 
       <div className={styles.divider} />
 

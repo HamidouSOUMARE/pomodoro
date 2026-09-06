@@ -32,6 +32,12 @@ export function loadSettings(): Settings {
     short: clamp(parsed.short, DEFAULT_SETTINGS.short, LIMITS.short.min, LIMITS.short.max),
     long: clamp(parsed.long, DEFAULT_SETTINGS.long, LIMITS.long.min, LIMITS.long.max),
     cycles: clamp(parsed.cycles, DEFAULT_SETTINGS.cycles, LIMITS.cycles.min, LIMITS.cycles.max),
+    sessionLimit: clamp(
+      parsed.sessionLimit,
+      DEFAULT_SETTINGS.sessionLimit,
+      LIMITS.sessionLimit.min,
+      LIMITS.sessionLimit.max,
+    ),
     auto: typeof parsed.auto === 'boolean' ? parsed.auto : DEFAULT_SETTINGS.auto,
     notif: typeof parsed.notif === 'boolean' ? parsed.notif : DEFAULT_SETTINGS.notif,
     // un son importé ne survit pas au redémarrage : on retombe sur la cloche

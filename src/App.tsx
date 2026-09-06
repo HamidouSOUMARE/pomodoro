@@ -4,6 +4,7 @@ import { FruitSprite } from './components/FruitSprite';
 import { ModeTabs } from './components/ModeTabs';
 import { SegmentBar } from './components/SegmentBar';
 import { Seeds } from './components/Seeds';
+import { SessionMeter } from './components/SessionMeter';
 import { SettingsPanel } from './components/SettingsPanel';
 import { TimerDisplay } from './components/TimerDisplay';
 import { TitleBar } from './components/TitleBar';
@@ -51,7 +52,8 @@ export function App() {
       const target = event.target as HTMLElement | null;
       if (target && ['INPUT', 'SELECT', 'BUTTON', 'TEXTAREA'].includes(target.tagName)) return;
       event.preventDefault();
-      timer.toggle();
+      if (timer.sessionDone) timer.newSession();
+      else timer.toggle();
     };
 
     window.addEventListener('keydown', onKeyDown);
@@ -71,25 +73,38 @@ export function App() {
           {settings.cycles} fruits
         </p>
 
-        <ModeTabs current={timer.mode} onSelect={timer.selectMode} />
+        <ModeTabs current={timer.mode} onSelect={timer.selectMode} disabled={timer.sessionDone} />
 
         <FruitSprite mode={timer.mode} />
 
-        <TimerDisplay clock={clock} label={LABELS[timer.mode]} />
+        <TimerDisplay
+          clock={timer.sessionDone ? formatClock(0) : clock}
+          label={timer.sessionDone ? 'Session terminée — repose-toi' : LABELS[timer.mode]}
+        />
 
         <div className={styles.stepBar}>
-          <SegmentBar ratio={stepRatio} title="Progression de l'étape" />
+          <SegmentBar ratio={timer.sessionDone ? 1 : stepRatio} title="Progression de l'étape" />
         </div>
 
         <Seeds total={settings.cycles} filled={timer.completed} />
 
         <Controls
           running={timer.running}
+          sessionDone={timer.sessionDone}
           onToggle={timer.toggle}
           onReset={timer.resetStep}
           onSkip={timer.skip}
+          onNewSession={timer.newSession}
         />
 
+        {timer.plan ? (
+          <SessionMeter
+            plan={timer.plan}
+            elapsed={timer.sessionElapsed}
+            focusDone={timer.focusDone}
+            done={timer.sessionDone}
+          />
+        ) : null}
 
         <SettingsPanel settings={settings} onChange={update} />
       </main>

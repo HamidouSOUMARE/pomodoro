@@ -3,12 +3,24 @@ import styles from './Controls.module.css';
 
 interface ControlsProps {
   running: boolean;
+  sessionDone: boolean;
   onToggle: () => void;
   onReset: () => void;
   onSkip: () => void;
+  onNewSession: () => void;
 }
 
-export function Controls({ running, onToggle, onReset, onSkip }: ControlsProps) {
+export function Controls({ running, sessionDone, onToggle, onReset, onSkip, onNewSession }: ControlsProps) {
+  if (sessionDone) {
+    return (
+      <div className={styles.controls}>
+        <PixelButton variant="accent" size="large" onClick={onNewSession}>
+          Nouvelle session
+        </PixelButton>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.controls}>
       <PixelButton onClick={onReset} title="Réinitialiser l'étape" aria-label="Réinitialiser l'étape">
