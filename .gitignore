@@ -1,0 +1,13 @@
+node_modules/
+dist/
+dist-electron/
+release/
+
+# ancien dossier de build de la version HTML
+pomodoro-tomate/
+
+*.local
+.DS_Store
+*:Zone.Identifier
+.vite/
+coverage/
