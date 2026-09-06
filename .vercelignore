@@ -1,0 +1,11 @@
+# Vercel construit le projet de son cote : rien de tout ca n'a besoin d'etre envoye
+node_modules
+dist
+dev-dist
+coverage
+
+# ancien build Electron de la premiere version (des binaires de 180 Mo)
+pomodoro-tomate
+
+*.local
+*:Zone.Identifier
