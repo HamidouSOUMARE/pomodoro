@@ -1,0 +1,16 @@
+.seeds {
+  display: flex;
+  gap: var(--space-5);
+  margin: var(--space-7) 0 var(--space-9);
+}
+
+.seed {
+  width: var(--size-seed);
+  height: var(--size-seed);
+  background: var(--color-shadow);
+  border: var(--border-pixel);
+}
+
+.full {
+  background: var(--color-accent);
+}

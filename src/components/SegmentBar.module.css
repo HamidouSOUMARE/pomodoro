@@ -1,0 +1,19 @@
+.bar {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.segment {
+  width: var(--size-seg-width);
+  height: var(--size-seg-height);
+  background: var(--color-shadow);
+  border: var(--border-pixel);
+}
+
+.on {
+  background: var(--color-accent);
+}
+
+.soft.on {
+  background: var(--color-ink-soft);
+}

@@ -1,0 +1,49 @@
+.shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--color-panel);
+  margin: var(--space-6);
+  border: var(--border-pixel);
+  padding: var(--space-9) var(--space-8) var(--space-10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app::-webkit-scrollbar {
+  width: var(--size-scrollbar);
+}
+
+.app::-webkit-scrollbar-track {
+  background: var(--color-panel);
+}
+
+.app::-webkit-scrollbar-thumb {
+  background: var(--color-shadow);
+  border: var(--border-pixel);
+}
+
+.title {
+  font-family: var(--font-pixel);
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-wider);
+  text-shadow: var(--shadow-text);
+}
+
+.tagline {
+  color: var(--color-ink-soft);
+  margin-top: var(--space-3);
+  text-align: center;
+  line-height: var(--leading-tight);
+  max-width: var(--width-tagline);
+}
+
+.stepBar {
+  margin-top: var(--space-6);
+}

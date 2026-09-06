@@ -1,0 +1,12 @@
+.box {
+  width: var(--size-sprite);
+  margin: var(--space-8) 0 var(--space-2);
+}
+
+.box svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  shape-rendering: crispEdges;
+  filter: drop-shadow(var(--shadow-sprite));
+}

@@ -1,0 +1,13 @@
+.time {
+  font-family: var(--font-pixel);
+  font-size: var(--text-2xl);
+  margin-top: var(--space-8);
+  text-shadow: var(--shadow-text-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  color: var(--color-ink-soft);
+  margin-top: var(--space-4);
+  text-align: center;
+}

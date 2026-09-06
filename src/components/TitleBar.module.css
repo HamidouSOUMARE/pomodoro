@@ -1,0 +1,46 @@
+.bar {
+  -webkit-app-region: drag;
+  background: var(--color-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+  flex-shrink: 0;
+}
+
+.name {
+  font-family: var(--font-pixel);
+  font-size: var(--text-xs);
+  color: var(--color-ink);
+  letter-spacing: var(--tracking-wide);
+}
+
+.buttons {
+  display: flex;
+  gap: var(--space-3);
+  -webkit-app-region: no-drag;
+}
+
+.buttons button {
+  width: var(--size-winbtn);
+  height: var(--size-winbtn);
+  border: var(--border-hard);
+  padding: 0;
+  cursor: pointer;
+}
+
+.buttons button:hover {
+  filter: brightness(1.2);
+}
+
+.minimize {
+  background: var(--color-ink);
+}
+
+.maximize {
+  background: var(--color-leaf);
+}
+
+.close {
+  background: var(--color-tomato);
+}
