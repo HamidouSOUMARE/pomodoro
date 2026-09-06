@@ -1,44 +1,75 @@
-.shell {
-  height: 100%;
+.page {
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
-.app {
-  flex: 1;
-  overflow-y: auto;
-  background: var(--color-panel);
-  margin: var(--space-6);
+/* ---------- barre d'application ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-topbar);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  background: var(--color-shadow);
+  border-bottom: var(--border-pixel);
+  padding: calc(var(--space-5) + var(--safe-top)) calc(var(--space-7) + var(--safe-right))
+    var(--space-5) calc(var(--space-7) + var(--safe-left));
+}
+
+.brand {
+  font-family: var(--font-pixel);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-ink);
+}
+
+.gear {
+  min-width: var(--tap-target);
+  min-height: var(--tap-target);
+  font-size: var(--text-lg);
+  line-height: 1;
+  color: var(--color-ink);
+  background: var(--color-panel-alt);
   border: var(--border-pixel);
-  padding: var(--space-9) var(--space-8) var(--space-10);
+  box-shadow: var(--shadow-mini);
+  cursor: pointer;
+}
+
+.gear:active {
+  transform: translate(var(--press-offset-sm), var(--press-offset-sm));
+  box-shadow: 0 0 0 var(--color-shadow);
+}
+
+/* ---------- corps ---------- */
+.layout {
+  flex: 1;
+  width: 100%;
+  max-width: var(--width-content);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* `safe` evite de rogner le haut quand le contenu depasse */
+  justify-content: center;
+  justify-content: safe center;
+  gap: var(--space-8);
+  padding: var(--space-8) calc(var(--space-7) + var(--safe-right))
+    calc(var(--space-10) + var(--safe-bottom)) calc(var(--space-7) + var(--safe-left));
+}
+
+.timer {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.app::-webkit-scrollbar {
-  width: var(--size-scrollbar);
-}
-
-.app::-webkit-scrollbar-track {
-  background: var(--color-panel);
-}
-
-.app::-webkit-scrollbar-thumb {
-  background: var(--color-shadow);
-  border: var(--border-pixel);
-}
-
-.title {
-  font-family: var(--font-pixel);
-  font-size: var(--text-lg);
-  letter-spacing: var(--tracking-wider);
-  text-shadow: var(--shadow-text);
-}
-
 .tagline {
+  display: none;
   color: var(--color-ink-soft);
-  margin-top: var(--space-3);
   text-align: center;
   line-height: var(--leading-tight);
   max-width: var(--width-tagline);
@@ -46,4 +77,116 @@
 
 .stepBar {
   margin-top: var(--space-6);
+}
+
+/* ---------- réglages : tiroir sur mobile ---------- */
+.settings {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-drawer);
+  max-height: 88dvh;
+  overflow-y: auto;
+  background: var(--color-panel);
+  border-top: var(--border-pixel);
+  padding: var(--space-7) calc(var(--space-7) + var(--safe-right))
+    calc(var(--space-9) + var(--safe-bottom)) calc(var(--space-7) + var(--safe-left));
+  transform: translateY(101%);
+  visibility: hidden;
+  transition:
+    transform 200ms steps(5, end),
+    visibility 0s linear 200ms;
+}
+
+.settings.open {
+  transform: translateY(0);
+  visibility: visible;
+  transition:
+    transform 200ms steps(5, end),
+    visibility 0s;
+}
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-scrim);
+  background: var(--color-scrim);
+  border: 0;
+  cursor: pointer;
+}
+
+/* barre collante du tiroir : la sortie reste atteignable pendant le defilement */
+.drawerBar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-end;
+  background: var(--color-panel);
+  padding-bottom: var(--space-4);
+}
+
+.drawerClose {
+  min-width: var(--tap-target);
+  min-height: var(--tap-target);
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  line-height: 1;
+  color: var(--color-ink);
+  background: var(--color-panel-alt);
+  border: var(--border-pixel);
+  box-shadow: var(--shadow-mini);
+  cursor: pointer;
+}
+
+.drawerClose:active {
+  transform: translate(var(--press-offset-sm), var(--press-offset-sm));
+  box-shadow: 0 0 0 var(--color-shadow);
+}
+
+/* ---------- desktop : deux colonnes, plus de tiroir ---------- */
+@media (min-width: 960px) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--space-11);
+    padding-top: var(--space-11);
+  }
+
+  .timer {
+    flex: 1;
+    max-width: 520px;
+  }
+
+  .tagline {
+    display: block;
+    margin-bottom: var(--space-2);
+  }
+
+  .settings {
+    position: static;
+    z-index: auto;
+    width: var(--width-panel);
+    flex-shrink: 0;
+    max-height: none;
+    overflow: visible;
+    background: transparent;
+    border-top: 0;
+    padding: 0;
+    transform: none;
+    visibility: visible;
+    transition: none;
+  }
+
+  .layout {
+    justify-content: flex-start;
+  }
+
+  .gear,
+  .scrim,
+  .drawerBar {
+    display: none;
+  }
 }

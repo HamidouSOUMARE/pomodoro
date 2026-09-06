@@ -1,4 +1,4 @@
-import { useEffect, type CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { Controls } from './components/Controls';
 import { FruitSprite } from './components/FruitSprite';
 import { ModeTabs } from './components/ModeTabs';
@@ -7,7 +7,6 @@ import { Seeds } from './components/Seeds';
 import { SessionMeter } from './components/SessionMeter';
 import { SettingsPanel } from './components/SettingsPanel';
 import { TimerDisplay } from './components/TimerDisplay';
-import { TitleBar } from './components/TitleBar';
 import { usePomodoro } from './hooks/usePomodoro';
 import { useSettings } from './hooks/useSettings';
 import { setVolume } from './lib/audio';
@@ -36,6 +35,7 @@ const TITLE_ICONS: Record<Mode, string> = {
 export function App() {
   const { settings, update } = useSettings();
   const timer = usePomodoro(settings);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const clock = formatClock(timer.remaining);
 
   useEffect(() => {
@@ -43,11 +43,15 @@ export function App() {
   }, [settings.vol]);
 
   useEffect(() => {
-    document.title = `${clock} ${TITLE_ICONS[timer.mode]} POMODORO.EXE`;
+    document.title = `${clock} ${TITLE_ICONS[timer.mode]} Pomodoro`;
   }, [clock, timer.mode]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSettingsOpen(false);
+        return;
+      }
       if (event.code !== 'Space') return;
       const target = event.target as HTMLElement | null;
       if (target && ['INPUT', 'SELECT', 'BUTTON', 'TEXTAREA'].includes(target.tagName)) return;
@@ -63,51 +67,85 @@ export function App() {
   const stepRatio = timer.stepTotal === 0 ? 0 : 1 - timer.remaining / timer.stepTotal;
 
   return (
-    <div className={styles.shell} style={{ '--color-accent': ACCENTS[timer.mode] } as CSSProperties}>
-      <TitleBar />
+    <div className={styles.page} style={{ '--color-accent': ACCENTS[timer.mode] } as CSSProperties}>
+      <header className={styles.topbar}>
+        <h1 className={styles.brand}>POMODORO</h1>
+        <button
+          type="button"
+          className={styles.gear}
+          onClick={() => setSettingsOpen((open) => !open)}
+          aria-expanded={settingsOpen}
+          aria-controls="reglages"
+          aria-label={settingsOpen ? 'Fermer les réglages' : 'Ouvrir les réglages'}
+        >
+          ⚙
+        </button>
+      </header>
 
-      <main className={styles.app}>
-        <h1 className={styles.title}>POMODORO</h1>
-        <p className={styles.tagline}>
-          {settings.focus} min de focus · {settings.short} min de pause · grande pause tous les{' '}
-          {settings.cycles} fruits
-        </p>
+      <div className={styles.layout}>
+        <main className={styles.timer}>
+          <p className={styles.tagline}>
+            {settings.focus} min de focus · {settings.short} min de pause · grande pause tous les{' '}
+            {settings.cycles} fruits
+          </p>
 
-        <ModeTabs current={timer.mode} onSelect={timer.selectMode} disabled={timer.sessionDone} />
+          <ModeTabs current={timer.mode} onSelect={timer.selectMode} disabled={timer.sessionDone} />
 
-        <FruitSprite mode={timer.mode} />
+          <FruitSprite mode={timer.mode} />
 
-        <TimerDisplay
-          clock={timer.sessionDone ? formatClock(0) : clock}
-          label={timer.sessionDone ? 'Session terminée — repose-toi' : LABELS[timer.mode]}
-        />
+          <TimerDisplay
+            clock={timer.sessionDone ? formatClock(0) : clock}
+            label={timer.sessionDone ? 'Session terminée — repose-toi' : LABELS[timer.mode]}
+          />
 
-        <div className={styles.stepBar}>
-          <SegmentBar ratio={timer.sessionDone ? 1 : stepRatio} title="Progression de l'étape" />
-        </div>
+          <div className={styles.stepBar}>
+            <SegmentBar ratio={timer.sessionDone ? 1 : stepRatio} title="Progression de l'étape" />
+          </div>
 
-        <Seeds total={settings.cycles} filled={timer.completed} />
+          <Seeds total={settings.cycles} filled={timer.completed} />
 
-        <Controls
-          running={timer.running}
-          sessionDone={timer.sessionDone}
-          onToggle={timer.toggle}
-          onReset={timer.resetStep}
-          onSkip={timer.skip}
-          onNewSession={timer.newSession}
-        />
+          <Controls
+            running={timer.running}
+            sessionDone={timer.sessionDone}
+            onToggle={timer.toggle}
+            onReset={timer.resetStep}
+            onSkip={timer.skip}
+            onNewSession={timer.newSession}
+          />
 
-        {timer.plan ? (
-          <SessionMeter
-            plan={timer.plan}
-            elapsed={timer.sessionElapsed}
-            focusDone={timer.focusDone}
-            done={timer.sessionDone}
+          {timer.plan ? (
+            <SessionMeter
+              plan={timer.plan}
+              elapsed={timer.sessionElapsed}
+              focusDone={timer.focusDone}
+              done={timer.sessionDone}
+            />
+          ) : null}
+        </main>
+
+        {settingsOpen ? (
+          <button
+            type="button"
+            className={styles.scrim}
+            aria-label="Fermer les réglages"
+            onClick={() => setSettingsOpen(false)}
           />
         ) : null}
 
-        <SettingsPanel settings={settings} onChange={update} />
-      </main>
+        <aside id="reglages" className={`${styles.settings} ${settingsOpen ? styles.open : ''}`}>
+          <div className={styles.drawerBar}>
+            <button
+              type="button"
+              className={styles.drawerClose}
+              onClick={() => setSettingsOpen(false)}
+              aria-label="Fermer les réglages"
+            >
+              ✕
+            </button>
+          </div>
+          <SettingsPanel settings={settings} onChange={update} />
+        </aside>
+      </div>
     </div>
   );
 }

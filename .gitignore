@@ -1,10 +1,11 @@
 node_modules/
 dist/
-dist-electron/
-release/
 
 # ancien dossier de build de la version HTML
 pomodoro-tomate/
+
+# service worker genere par le build
+dev-dist/
 
 *.local
 .DS_Store

@@ -21,6 +21,9 @@
   /* accent = couleur du mode courant, pilotee par React */
   --color-accent: var(--color-tomato);
 
+  /* voile du tiroir de réglages sur mobile */
+  --color-scrim: rgba(12, 17, 13, 0.76);
+
   /* ---- typographie ---- */
   --font-pixel: 'Press Start 2P', monospace;
   --font-body: 'VT323', monospace;
@@ -32,6 +35,8 @@
   --text-base: 20px;
   --text-lg: 22px;
   --text-2xl: 44px;
+  /* le minuteur suit la largeur de l'écran */
+  --text-timer: clamp(38px, 11vw, 52px);
 
   --tracking-wide: 0.05em;
   --tracking-wider: 0.06em;
@@ -72,7 +77,9 @@
   --size-seed: 16px;
   --size-seg-width: 12px;
   --size-seg-height: 14px;
-  --size-sprite: 210px;
+  --size-sprite: clamp(132px, 36vw, 210px);
+  /* cible tactile minimale recommandée */
+  --tap-target: 44px;
   --size-toggle: 20px;
   --size-scrollbar: 12px;
 
@@ -80,4 +87,16 @@
   --width-input: 86px;
   --width-range: 140px;
   --width-tagline: 34ch;
+  --width-content: 980px;
+
+  /* ---- empilement ---- */
+  --z-topbar: 10;
+  --z-scrim: 20;
+  --z-drawer: 30;
+
+  /* ---- marges système (encoche, barre gestuelle) ---- */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }

@@ -6,6 +6,7 @@
   border: var(--border-pixel);
   box-shadow: var(--shadow-btn);
   padding: var(--space-5) var(--space-6);
+  min-height: var(--tap-target);
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide);

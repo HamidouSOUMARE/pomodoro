@@ -35,6 +35,20 @@ describe('App', () => {
     }
   });
 
+  it('ouvre et ferme le tiroir de réglages', () => {
+    render(<App />);
+    const gear = screen.getByRole('button', { name: 'Ouvrir les réglages' });
+    expect(gear.getAttribute('aria-expanded')).toBe('false');
+
+    fireEvent.click(gear);
+    expect(screen.getByRole('button', { name: 'Fermer les réglages', expanded: true })).toBeTruthy();
+
+    // dans l'ordre : l'engrenage, le voile, puis la croix du tiroir
+    const closers = screen.getAllByRole('button', { name: 'Fermer les réglages' });
+    fireEvent.click(closers[closers.length - 1]);
+    expect(screen.getByRole('button', { name: 'Ouvrir les réglages' })).toBeTruthy();
+  });
+
   it('recalcule le plan quand on change la durée totale de session', () => {
     render(<App />);
 

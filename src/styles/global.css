@@ -6,18 +6,20 @@
   padding: 0;
 }
 
-html,
-body,
-#root {
-  height: 100%;
+html {
+  /* pas de rebond ni de tire-pour-rafraichir dans une app installée */
+  overscroll-behavior: none;
 }
 
 body {
+  min-height: 100dvh;
   font-family: var(--font-body);
   font-size: var(--text-base);
   background: var(--color-bg);
   color: var(--color-ink);
   image-rendering: pixelated;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
 }
 
 ::selection {
@@ -31,7 +33,21 @@ select {
   font-family: inherit;
 }
 
+button {
+  /* supprime le délai de 300 ms sur mobile */
+  touch-action: manipulation;
+}
+
 :focus-visible {
   outline: var(--border-width) solid var(--color-ink);
   outline-offset: var(--space-1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

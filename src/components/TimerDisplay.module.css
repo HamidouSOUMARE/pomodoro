@@ -1,9 +1,10 @@
 .time {
   font-family: var(--font-pixel);
-  font-size: var(--text-2xl);
+  font-size: var(--text-timer);
   margin-top: var(--space-8);
   text-shadow: var(--shadow-text-lg);
   font-variant-numeric: tabular-nums;
+  user-select: none;
 }
 
 .label {

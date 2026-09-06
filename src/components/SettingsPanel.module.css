@@ -1,7 +1,7 @@
 .panel {
   width: 100%;
   max-width: var(--width-panel);
-  margin-top: var(--space-11);
+  margin: 0 auto;
   background: var(--color-panel-alt);
   border: var(--border-pixel);
   box-shadow: var(--shadow-panel);
@@ -48,6 +48,7 @@
   color: var(--color-ink);
   border: var(--border-pixel);
   padding: var(--space-2) var(--space-1);
+  min-height: var(--tap-target);
 }
 
 .select {
@@ -57,6 +58,7 @@
   color: var(--color-ink);
   border: var(--border-pixel);
   padding: var(--space-2) var(--space-4);
+  min-height: var(--tap-target);
   cursor: pointer;
 }
 
@@ -77,7 +79,8 @@
   align-items: center;
   gap: var(--space-5);
   cursor: pointer;
-  margin-bottom: var(--space-4);
+  min-height: var(--tap-target);
+  line-height: var(--leading-tight);
 }
 
 .toggle input {
@@ -129,6 +132,7 @@
   border: var(--border-pixel);
   box-shadow: var(--shadow-mini);
   padding: var(--space-2) var(--space-5);
+  min-height: var(--tap-target);
   cursor: pointer;
 }
 
@@ -168,4 +172,5 @@
 .range {
   accent-color: var(--color-accent);
   width: var(--width-range);
+  min-height: var(--tap-target);
 }
