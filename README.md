@@ -1,82 +1,88 @@
-# 🍅 Pomodoro Tomate — app desktop
+# 🍅 Pomodoro Tomate
 
 Minuteur Pomodoro rétro : cycles automatiques (focus → pause → grande pause),
-enveloppe de session réglable, sons au choix, réglages mémorisés, et une
-tomate en pixel art.
+enveloppe de session réglable, sons au choix, réglages mémorisés, et une tomate
+en pixel art.
 
-Interface en **React + TypeScript**, empaquetée avec **Vite** et **Electron**.
+App web installable (PWA) en **React + TypeScript**, construite avec **Vite**.
+Elle s'adapte au téléphone comme au grand écran et fonctionne hors-ligne.
 
-## Prérequis (une seule fois)
+## Lancer le projet
 
-Installe **Node.js LTS** : https://nodejs.org (bouton vert, installation par défaut).
-Vérifie dans un terminal : `node --version` doit afficher un numéro.
-
-## Lancer l'app
-
-Ouvre un terminal **dans ce dossier**, puis :
+Il faut **Node.js LTS** (https://nodejs.org). Ensuite, dans ce dossier :
 
 ```bash
-npm install       # télécharge les dépendances (~2-3 min la première fois)
-npm run dev       # ouvre l'app dans le navigateur (rechargement à chaud)
-npm run dev:desktop  # même chose, mais dans la fenêtre Electron
+npm install
+npm run dev      # http://localhost:5173
 ```
 
-Pour lancer la version compilée dans sa fenêtre : `npm start`.
+Les autres commandes :
 
-## Créer le vrai exécutable double-cliquable
+| Commande | Rôle |
+|---|---|
+| `npm run dev` | serveur de développement, rechargement à chaud |
+| `npm run build` | vérification TypeScript + build de production dans `dist/` |
+| `npm run preview` | sert le build de production en local |
+| `npm test` | tests unitaires et de rendu (Vitest) |
+| `npm run lint` | ESLint |
+| `npm run icons` | régénère les icônes PWA depuis le sprite |
+
+## Installer l'app
+
+Une fois le site ouvert dans le navigateur :
+
+- **Android / Chrome** : menu ⋮ → « Installer l'application »
+- **iOS / Safari** : Partager → « Sur l'écran d'accueil »
+- **Ordinateur / Chrome, Edge** : icône d'installation dans la barre d'adresse
+
+L'app s'ouvre alors dans sa propre fenêtre, sans barre d'URL, et démarre même
+sans connexion : le service worker met en cache le code, les polices et les icônes.
+
+> Le son de fin peut être coupé par le système quand l'app est en arrière-plan sur
+> mobile — c'est une limite des navigateurs. Active « Notification système » dans les
+> réglages pour un signal fiable. Sur iOS, les notifications ne fonctionnent que si
+> l'app est installée sur l'écran d'accueil.
+
+## Déployer
+
+Le projet est un site statique, sans configuration particulière :
 
 ```bash
-npm run dist
+npm i -g vercel
+vercel
 ```
 
-Le résultat apparaît dans le dossier `release/` :
-
-| Ton système | Fichier produit | Ensuite |
-|---|---|---|
-| **Windows** | `Pomodoro Tomate Setup 2.0.0.exe` | Double-clic → s'installe et crée un raccourci sur le bureau |
-| **macOS** | `Pomodoro Tomate-2.0.0.dmg` | Double-clic → glisse l'app dans Applications |
-| **Linux** | `Pomodoro Tomate-2.0.0.AppImage` | `chmod +x` puis double-clic |
-
-⚠️ La commande construit l'installeur pour **le système sur lequel tu la lances**
-(un .exe se fabrique sous Windows, un .dmg sous macOS).
-
-💡 **Windows/macOS afficheront un avertissement de sécurité** au premier lancement
-("éditeur inconnu") car l'app n'est pas signée avec un certificat payant. C'est normal
-pour une app personnelle : clique "Informations complémentaires → Exécuter quand même"
-(Windows) ou clic droit → Ouvrir (macOS).
+Vercel détecte Vite tout seul (build `npm run build`, dossier `dist`).
 
 ## Durée totale de la session
 
-Le réglage **Durée totale de la session** fixe l'enveloppe de travail (de 15 min à 12 h,
-ou *illimitée*). L'app calcule combien de focus tiennent dedans, pauses comprises, et
-l'annonce sous le réglage :
+Le réglage **Durée totale de la session** fixe l'enveloppe de travail (de 15 min à
+12 h, ou *illimitée*). L'app calcule combien de focus tiennent dedans, pauses
+comprises, et l'annonce sous le réglage :
 
 > 5 focus de 25 min, avec 4 pauses — 2 h 35 au total.
 
-Pendant la session, un compteur affiche le temps consommé, le focus en cours et le temps
-restant. Une fois le dernier focus bouclé, le minuteur s'arrête tout seul et propose de
-repartir sur une nouvelle session.
+Pendant la session, un compteur affiche le temps consommé, le focus en cours et le
+temps restant. Une fois le dernier focus bouclé, le minuteur s'arrête tout seul et
+propose de repartir sur une nouvelle session.
 
-## Raccourcis
+## Raccourcis clavier
 
 - **Barre espace** : démarrer / mettre en pause
-- **⏭** : passer directement à l'étape suivante
+- **Échap** : fermer les réglages
+- **⏭** : passer à l'étape suivante
 - **↺** : réinitialiser l'étape en cours
 
-## Développement
-
-```bash
-npm test     # tests unitaires et de rendu (Vitest)
-npm run lint # ESLint
-npm run build # vérification TypeScript + build de production
-```
-
-Organisation du code :
+## Organisation du code
 
 ```
-electron/    fenêtre Electron (main + preload)
-src/lib/     logique pure : plan de session, sons, persistance
-src/hooks/   moteur du minuteur et réglages
-src/components/  composants d'interface (CSS Modules)
-src/styles/  design tokens — aucune valeur brute ailleurs
+public/           icônes générées + fichiers servis tels quels
+scripts/          générateur d'icônes (sans dépendance)
+src/lib/          logique pure : plan de session, sons, persistance
+src/hooks/        moteur du minuteur et réglages
+src/components/   composants d'interface (CSS Modules)
+src/styles/       design tokens — aucune valeur brute ailleurs
 ```
+
+La mise en page bascule à 960 px : en dessous, une colonne et les réglages dans un
+tiroir ; au-dessus, le minuteur et les réglages côte à côte.
