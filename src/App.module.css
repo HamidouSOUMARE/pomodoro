@@ -90,7 +90,9 @@
   overflow-y: auto;
   background: var(--color-panel);
   border-top: var(--border-pixel);
-  padding: var(--space-7) calc(var(--space-7) + var(--safe-right))
+  /* pas de padding en haut : il vivrait au-dessus de la barre collante et le
+     contenu défilerait dans cette bande. La marge est portée par .drawerBar. */
+  padding: 0 calc(var(--space-7) + var(--safe-right))
     calc(var(--space-9) + var(--safe-bottom)) calc(var(--space-7) + var(--safe-left));
   transform: translateY(101%);
   visibility: hidden;
@@ -116,7 +118,7 @@
   cursor: pointer;
 }
 
-/* barre collante du tiroir : la sortie reste atteignable pendant le defilement */
+/* barre collante du tiroir : la sortie reste atteignable pendant le défilement */
 .drawerBar {
   position: sticky;
   top: 0;
@@ -124,7 +126,8 @@
   display: flex;
   justify-content: flex-end;
   background: var(--color-panel);
-  padding-bottom: var(--space-4);
+  border-bottom: var(--border-pixel);
+  padding: var(--space-7) 0 var(--space-4);
 }
 
 .drawerClose {
