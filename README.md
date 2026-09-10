@@ -95,8 +95,15 @@ Les heures de focus cumulées ouvrent des parcelles (2 au départ, 6 à 50 h) et
 débloquent les espèces. Une plante arrivée à maturité se cueille : elle rejoint la
 collection et libère sa parcelle.
 
-Les sprites des plantes sont dessinés en pixels dans `src/garden/plants.ts`, sur
-une grille de 16×16 validée par les tests.
+Les plantes poussent dans un **enclos** : une scène continue avec sa clôture, son
+herbe, ses buissons et ses fleurs sauvages, où chaque parcelle est un emplacement
+cliquable. Toucher une parcelle ouvre ses actions sous la scène.
+
+Les sprites des plantes sont dessinés en pixels dans `src/garden/plants.ts`, sur une
+grille de 16×16 validée par les tests. Le décor de l'enclos, lui, est construit par
+`src/garden/scene.ts` : une grille de 80×68 écrite à la main serait illisible, alors
+il est généré, avec une graine fixe pour rester identique d'un rendu à l'autre. Des
+tests garantissent qu'aucun élément de décor ne vient recouvrir une parcelle.
 
 ## Raccourcis clavier
 

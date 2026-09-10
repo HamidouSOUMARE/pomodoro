@@ -1,0 +1,68 @@
+.enclosure {
+  position: relative;
+  width: 100%;
+  /* au-dela, les pixels de la scene deviennent des gros carres */
+  max-width: var(--width-enclosure);
+  margin: 0 auto;
+  border: var(--border-pixel);
+  box-shadow: var(--shadow-panel);
+  overflow: hidden;
+  line-height: 0;
+}
+
+.layer {
+  display: block;
+  width: 100%;
+  height: auto;
+  shape-rendering: crispEdges;
+}
+
+/* la clôture de devant passe au-dessus des plantes */
+.front {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.slot {
+  position: absolute;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.slot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  shape-rendering: crispEdges;
+}
+
+.slot:disabled {
+  cursor: default;
+}
+
+.slot:focus-visible {
+  outline: var(--border-width) solid var(--color-ink);
+  outline-offset: 1px;
+}
+
+/* la parcelle choisie ressort sans bouger d'un pixel */
+.selected {
+  filter: drop-shadow(0 0 0 var(--color-accent)) brightness(1.15);
+}
+
+.locked {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.lock {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  text-shadow: 1px 1px 0 var(--color-shadow);
+  line-height: 1;
+}

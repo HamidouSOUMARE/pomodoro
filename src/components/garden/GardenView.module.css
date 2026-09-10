@@ -53,42 +53,30 @@
   letter-spacing: var(--tracking-widest);
 }
 
-/* ---------- parcelles ---------- */
-.plots {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-6);
-}
-
-.plot {
+/* ---------- parcelle choisie ---------- */
+.detail {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-5);
   background: var(--color-panel-alt);
   border: var(--border-pixel);
   box-shadow: var(--shadow-mini);
-  padding: var(--space-5);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-3);
-  text-align: center;
+  padding: var(--space-5) var(--space-6);
 }
 
-.plotName {
+.detailName {
   line-height: var(--leading-tight);
 }
 
-.plotStage {
+.detailStage,
+.detailCost {
   color: var(--color-ink-soft);
   line-height: var(--leading-tight);
 }
 
-.plotCost {
-  color: var(--color-ink-soft);
-  line-height: var(--leading-tight);
-}
-
-.plotAction {
-  width: 100%;
-  margin-top: auto;
+.detailCost {
+  margin-left: auto;
 }
 
 .mature {
@@ -205,8 +193,3 @@
   color: var(--color-accent);
 }
 
-@media (min-width: 620px) {
-  .plots {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}

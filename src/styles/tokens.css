@@ -97,6 +97,7 @@
   --width-range: 140px;
   --width-tagline: 34ch;
   --width-content: 980px;
+  --width-enclosure: 560px;
 
   /* ---- empilement ---- */
   --z-topbar: 10;

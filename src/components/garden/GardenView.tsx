@@ -1,16 +1,16 @@
+import { useState } from 'react';
 import {
-  MAX_PLOTS,
   growthCostFor,
   isSpeciesUnlocked,
   milestones,
   nextMilestone,
-  plotUnlockHours,
   plotsUnlocked,
 } from '../../garden/economy';
 import { collectionSize } from '../../garden/reducer';
 import { RARITY_LABEL, SPECIES, SPECIES_LIST, totalCost } from '../../garden/species';
 import { FINAL_STAGE, type GardenState, type Rarity, type SpeciesId } from '../../garden/types';
 import { PixelButton } from '../PixelButton';
+import { Enclosure } from './Enclosure';
 import { PlantSprite } from './PlantSprite';
 import { Rayons } from './RayonIcon';
 import { TestBench } from './TestBench';
@@ -54,6 +54,10 @@ export function GardenView({
   const hours = garden.focusSeconds / 3600;
   const hasFreePlot = garden.plots.slice(0, openPlots).some((plot) => plot === null);
   const harvested = collectionSize(garden);
+  const [selected, setSelected] = useState(0);
+  const selectedPlot = garden.plots[selected] ?? null;
+  const selectedCost = selectedPlot ? growthCostFor(selectedPlot.species, selectedPlot.stage) : null;
+  const selectedMature = selectedPlot?.stage === FINAL_STAGE;
 
   return (
     <div className={styles.view}>
@@ -72,74 +76,40 @@ export function GardenView({
       </section>
 
       <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Parcelles</h2>
-        <div className={styles.plots}>
-          {Array.from({ length: MAX_PLOTS }, (_, index) => {
-            const plot = garden.plots[index];
-            const unlocked = index < openPlots;
+        <h2 className={styles.sectionTitle}>L&apos;enclos</h2>
+        <Enclosure garden={garden} selected={selected} onSelect={setSelected} />
 
-            if (!unlocked) {
-              return (
-                <div className={styles.plot} key={index}>
-                  <PlantSprite species={null} locked label="Parcelle verrouillée" />
-                  <span className={styles.plotStage}>
-                    Débloquée à {plotUnlockHours(index)} h de focus
+        <div className={styles.detail}>
+          {selectedPlot ? (
+            <>
+              <span className={styles.detailName}>{SPECIES[selectedPlot.species].name}</span>
+              <span className={`${styles.detailStage} ${selectedMature ? styles.mature : ''}`}>
+                {SPECIES[selectedPlot.species].stages[selectedPlot.stage]}
+              </span>
+              {selectedMature ? (
+                <PixelButton variant="accent" onClick={() => onHarvest(selected)}>
+                  Cueillir
+                </PixelButton>
+              ) : (
+                <>
+                  <span className={styles.detailCost}>
+                    Arrosage <Rayons amount={selectedCost ?? 0} />
                   </span>
-                </div>
-              );
-            }
-
-            if (!plot) {
-              return (
-                <div className={styles.plot} key={index}>
-                  <PlantSprite species={null} label="Parcelle libre" />
-                  <span className={styles.plotName}>Terre libre</span>
-                  <span className={styles.plotStage}>Sème une graine ci-dessous</span>
-                </div>
-              );
-            }
-
-            const species = SPECIES[plot.species];
-            const cost = growthCostFor(plot.species, plot.stage);
-            const mature = plot.stage === FINAL_STAGE;
-
-            return (
-              <div className={styles.plot} key={index}>
-                <PlantSprite
-                  species={plot.species}
-                  stage={plot.stage}
-                  label={`${species.name}, ${species.stages[plot.stage]}`}
-                />
-                <span className={styles.plotName}>{species.name}</span>
-                <span className={`${styles.plotStage} ${mature ? styles.mature : ''}`}>
-                  {species.stages[plot.stage]}
-                </span>
-                {mature ? (
                   <PixelButton
-                    className={styles.plotAction}
-                    variant="accent"
-                    onClick={() => onHarvest(index)}
+                    variant={selectedCost !== null && garden.rayons >= selectedCost ? 'accent' : 'default'}
+                    disabled={selectedCost === null || garden.rayons < selectedCost}
+                    onClick={() => onGrow(selected)}
                   >
-                    Cueillir
+                    Arroser
                   </PixelButton>
-                ) : (
-                  <>
-                    <span className={styles.plotCost}>
-                      Arrosage <Rayons amount={cost ?? 0} />
-                    </span>
-                    <PixelButton
-                      className={styles.plotAction}
-                      variant={cost !== null && garden.rayons >= cost ? 'accent' : 'default'}
-                      disabled={cost === null || garden.rayons < cost}
-                      onClick={() => onGrow(index)}
-                    >
-                      Arroser
-                    </PixelButton>
-                  </>
-                )}
-              </div>
-            );
-          })}
+                </>
+              )}
+            </>
+          ) : (
+            <span className={styles.detailStage}>
+              Parcelle libre — choisis une graine ci-dessous.
+            </span>
+          )}
         </div>
       </section>
 

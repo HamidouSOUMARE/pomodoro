@@ -186,9 +186,6 @@ describe('banc d essai', () => {
 
   it('vide entierement le jardin', async () => {
     const { resetGarden } = await import('./reducer');
-    let state = plantSeed(garden({ rayons: 900, focusSeconds: 9999 }), 'paquerette');
-    state = { ...state, collection: { tulipe: 4 } };
-
     const cleared = resetGarden();
     expect(cleared.rayons).toBe(0);
     expect(cleared.focusSeconds).toBe(0);

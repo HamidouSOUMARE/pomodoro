@@ -99,6 +99,8 @@ describe('minuteur et jardin', () => {
     fireEvent.click(screen.getAllByRole('button', { name: /30/ })[0]);
     expect(rayonsInTopbar()).toBe(70);
     expect(screen.getByText('Graine semée')).toBeTruthy();
+    // la parcelle semee est bien celle qui apparait dans l'enclos
+    expect(screen.getByRole('button', { name: /Pâquerette, Graine semée/ })).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: 'Arroser' }));
     expect(rayonsInTopbar()).toBe(58);
@@ -123,6 +125,6 @@ describe('minuteur et jardin', () => {
     expect(screen.getByRole('heading', { name: /0 cueillie/ })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Cueillir' }));
     expect(screen.getByRole('heading', { name: /1 cueillie/ })).toBeTruthy();
-    expect(screen.getAllByText('Terre libre').length).toBeGreaterThan(0);
+    expect(screen.getByText(/Parcelle libre/)).toBeTruthy();
   });
 });
