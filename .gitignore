@@ -1,14 +1,15 @@
 node_modules/
 dist/
 
-# ancien dossier de build de la version HTML
-pomodoro-tomate/
-
 # service worker genere par le build
 dev-dist/
+
+# captures d'ecran de reference, personnelles
+screens/
 
 *.local
 .DS_Store
 *:Zone.Identifier
 .vite/
 coverage/
+.vercel
