@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Controls } from './components/Controls';
 import { FruitSprite } from './components/FruitSprite';
 import { ModeTabs } from './components/ModeTabs';
@@ -6,8 +6,11 @@ import { SegmentBar } from './components/SegmentBar';
 import { Seeds } from './components/Seeds';
 import { SessionMeter } from './components/SessionMeter';
 import { SettingsPanel } from './components/SettingsPanel';
+import { GardenView } from './components/garden/GardenView';
+import { Rayons } from './components/garden/RayonIcon';
 import { TimerDisplay } from './components/TimerDisplay';
-import { usePomodoro } from './hooks/usePomodoro';
+import { useGarden } from './hooks/useGarden';
+import { usePomodoro, type PomodoroHandlers } from './hooks/usePomodoro';
 import { useSettings } from './hooks/useSettings';
 import { setVolume } from './lib/audio';
 import { formatClock } from './lib/session';
@@ -32,11 +35,50 @@ const TITLE_ICONS: Record<Mode, string> = {
   long: '🍉',
 };
 
+type View = 'minuteur' | 'jardin';
+
+/** Combien de temps la bulle de gain reste affichée. */
+const GAIN_DURATION_MS = 3200;
+
 export function App() {
   const { settings, update } = useSettings();
-  const timer = usePomodoro(settings);
+  const {
+    garden,
+    lastGain,
+    rewardFocus,
+    rewardSession,
+    penaliseSkip,
+    buy,
+    grow,
+    harvest,
+    dismissGain,
+  } = useGarden();
+
+  const handlers = useMemo<PomodoroHandlers>(
+    () => ({
+      onFocusDone: rewardFocus,
+      onSessionDone: rewardSession,
+      onFocusSkipped: penaliseSkip,
+    }),
+    [penaliseSkip, rewardFocus, rewardSession],
+  );
+
+  const timer = usePomodoro(settings, handlers);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [view, setView] = useState<View>('minuteur');
   const clock = formatClock(timer.remaining);
+
+  // la bulle de gain s'efface d'elle-meme
+  useEffect(() => {
+    if (!lastGain) return undefined;
+    const id = window.setTimeout(dismissGain, GAIN_DURATION_MS);
+    return () => window.clearTimeout(id);
+  }, [dismissGain, lastGain]);
+
+  const toggleView = useCallback(
+    () => setView((current) => (current === 'minuteur' ? 'jardin' : 'minuteur')),
+    [],
+  );
 
   useEffect(() => {
     setVolume(settings.vol);
@@ -69,20 +111,60 @@ export function App() {
   return (
     <div className={styles.page} style={{ '--color-accent': ACCENTS[timer.mode] } as CSSProperties}>
       <header className={styles.topbar}>
-        <h1 className={styles.brand}>POMODORO</h1>
-        <button
-          type="button"
-          className={styles.gear}
-          onClick={() => setSettingsOpen((open) => !open)}
-          aria-expanded={settingsOpen}
-          aria-controls="reglages"
-          aria-label={settingsOpen ? 'Fermer les réglages' : 'Ouvrir les réglages'}
-        >
-          ⚙
-        </button>
+        <h1 className={styles.brand}>{view === 'jardin' ? 'JARDIN' : 'POMODORO'}</h1>
+        <div className={styles.topbarRight}>
+          <span className={styles.rayons} title="Rayons disponibles">
+            <Rayons amount={garden.rayons} />
+          </span>
+          <button
+            type="button"
+            className={`${styles.iconButton} ${styles.viewToggle}`}
+            onClick={toggleView}
+            aria-label={view === 'jardin' ? 'Revenir au minuteur' : 'Ouvrir le jardin'}
+          >
+            {view === 'jardin' ? '⏱' : '🌱'}
+          </button>
+          <button
+            type="button"
+            className={`${styles.iconButton} ${styles.gear}`}
+            onClick={() => setSettingsOpen((open) => !open)}
+            aria-expanded={settingsOpen}
+            aria-controls="reglages"
+            aria-label={settingsOpen ? 'Fermer les réglages' : 'Ouvrir les réglages'}
+          >
+            ⚙
+          </button>
+        </div>
       </header>
 
-      <div className={styles.layout}>
+      {lastGain ? (
+        <output className={styles.gain} key={lastGain.id}>
+          {lastGain.reward ? (
+            <>
+              +<Rayons amount={lastGain.reward.base} />
+              {lastGain.reward.streakBonus > 0 ? (
+                <>
+                  {' · '}Série ×{lastGain.reward.streak} +
+                  <Rayons amount={lastGain.reward.streakBonus} />
+                </>
+              ) : null}
+            </>
+          ) : (
+            <>
+              Session bouclée +<Rayons amount={lastGain.sessionBonus} />
+            </>
+          )}
+        </output>
+      ) : null}
+
+      <div className={`${styles.layout} ${view === 'jardin' ? styles.wide : ''}`}>
+        {view === 'jardin' ? (
+          <main className={styles.garden}>
+            <GardenView garden={garden} onBuy={buy} onGrow={grow} onHarvest={harvest} />
+          </main>
+        ) : null}
+
+        {view === 'minuteur' ? (
         <main className={styles.timer}>
           <p className={styles.tagline}>
             {settings.focus} min de focus · {settings.short} min de pause · grande pause tous les{' '}
@@ -122,6 +204,7 @@ export function App() {
             />
           ) : null}
         </main>
+        ) : null}
 
         {settingsOpen ? (
           <button

@@ -1,0 +1,18 @@
+.sprite {
+  width: 100%;
+  max-width: var(--size-plant);
+  margin: 0 auto;
+}
+
+.sprite svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  shape-rendering: crispEdges;
+  filter: drop-shadow(var(--shadow-mini));
+}
+
+.locked svg {
+  opacity: 0.35;
+  filter: grayscale(1);
+}

@@ -1,0 +1,12 @@
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.12em;
+  shape-rendering: crispEdges;
+  flex-shrink: 0;
+}
+
+/* le montant et son icone ne doivent jamais se retrouver sur deux lignes */
+.amount {
+  white-space: nowrap;
+}

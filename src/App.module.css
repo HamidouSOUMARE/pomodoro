@@ -26,7 +26,20 @@
   color: var(--color-ink);
 }
 
-.gear {
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.rayons {
+  font-family: var(--font-pixel);
+  font-size: var(--text-2xs);
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.iconButton {
   min-width: var(--tap-target);
   min-height: var(--tap-target);
   font-size: var(--text-lg);
@@ -38,12 +51,42 @@
   cursor: pointer;
 }
 
-.gear:active {
+.iconButton:active {
   transform: translate(var(--press-offset-sm), var(--press-offset-sm));
   box-shadow: 0 0 0 var(--color-shadow);
 }
 
 /* ---------- corps ---------- */
+/* bulle de gain, au-dessus de tout */
+.gain {
+  position: fixed;
+  left: 50%;
+  top: calc(var(--space-11) + var(--safe-top));
+  transform: translateX(-50%);
+  z-index: var(--z-drawer);
+  font-family: var(--font-pixel);
+  font-size: var(--text-2xs);
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+  border: var(--border-pixel);
+  box-shadow: var(--shadow-btn);
+  padding: var(--space-5) var(--space-7);
+  text-align: center;
+  line-height: 1.6;
+  animation: gain 320ms steps(4, end);
+}
+
+@keyframes gain {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-1 * var(--space-7)));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%);
+  }
+}
+
 .layout {
   flex: 1;
   width: 100%;
@@ -65,6 +108,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.garden {
+  width: 100%;
 }
 
 .tagline {
@@ -163,7 +210,11 @@
     max-width: 520px;
   }
 
-  .tagline {
+  .garden {
+  width: 100%;
+}
+
+.tagline {
     display: block;
     margin-bottom: var(--space-2);
   }
@@ -187,9 +238,19 @@
     justify-content: flex-start;
   }
 
+  /* en vue jardin, la colonne des reglages laisse la place */
+  .wide .settings {
+    display: none;
+  }
+
   .gear,
   .scrim,
   .drawerBar {
     display: none;
+  }
+
+  /* la bascule minuteur/jardin, elle, reste accessible partout */
+  .viewToggle {
+    display: block;
   }
 }

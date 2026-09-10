@@ -75,19 +75,28 @@ export interface SpriteData {
   pixels: SpritePixel[];
 }
 
-/** Convertit la grille de caractères en liste de pixels prêts à dessiner. */
-export function getSprite(mode: Mode): SpriteData {
-  const grid = SPRITES[mode];
+/**
+ * Convertit une grille de caractères en liste de pixels prêts à dessiner.
+ * Partagé avec les plantes du jardin, qui ont leur propre palette.
+ */
+export function gridToSprite(
+  grid: readonly string[],
+  palette: Record<string, string>,
+): SpriteData {
   const height = grid.length;
   const width = grid[0].length;
   const pixels: SpritePixel[] = [];
 
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
-      const fill = PALETTE[grid[y][x]];
+      const fill = palette[grid[y][x]];
       if (fill) pixels.push({ x, y, fill });
     }
   }
 
   return { width, height, pixels };
+}
+
+export function getSprite(mode: Mode): SpriteData {
+  return gridToSprite(SPRITES[mode], PALETTE);
 }

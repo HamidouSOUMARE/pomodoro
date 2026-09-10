@@ -24,6 +24,13 @@
   /* voile du tiroir de réglages sur mobile */
   --color-scrim: rgba(12, 17, 13, 0.76);
 
+  /* raretés du jardin */
+  --color-commune: #8fae8a;
+  --color-peu-commune: #6abf4b;
+  --color-rare: #e8d44d;
+  --color-legendaire: #f0708d;
+  --color-soil: #6b4b2a;
+
   /* ---- typographie ---- */
   --font-pixel: 'Press Start 2P', monospace;
   --font-body: 'VT323', monospace;
@@ -78,6 +85,8 @@
   --size-seg-width: 12px;
   --size-seg-height: 14px;
   --size-sprite: clamp(132px, 36vw, 210px);
+  --size-plant: 96px;
+  --size-plant-small: 44px;
   /* cible tactile minimale recommandée */
   --tap-target: 44px;
   --size-toggle: 20px;

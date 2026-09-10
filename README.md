@@ -66,6 +66,38 @@ Pendant la session, un compteur affiche le temps consommé, le focus en cours et
 temps restant. Une fois le dernier focus bouclé, le minuteur s'arrête tout seul et
 propose de repartir sur une nouvelle session.
 
+## Le jardin (branche `jardin`, en essai)
+
+Le focus produit des **rayons** ☀, la monnaie du jardin :
+
+| Source | Gain |
+|---|---|
+| Focus terminé | 1 ☀ par minute |
+| 3 focus d'affilée | +15 ☀ |
+| Session complète | +40 ☀ |
+
+Les pauses ne rapportent rien, et un focus passé (⏭) non plus — il fait au passage
+tomber la série et prive de la prime de session. Une session de 3 h rapporte ≈ 180 ☀.
+
+Les rayons s'échangent contre des graines, puis servent à les arroser d'un stade
+de croissance au suivant. Le prix suit la rareté, à l'achat comme à l'arrosage :
+
+| Graine | Rareté | Graine | Arrosage | Total | Débloquée à |
+|---|---|---|---|---|---|
+| Pâquerette | Commune | 30 | 12 | 66 | — |
+| Coquelicot | Commune | 45 | 18 | 99 | — |
+| Tulipe | Peu commune | 90 | 35 | 195 | 3 h |
+| Tournesol | Peu commune | 130 | 50 | 280 | 3 h |
+| Lavande | Rare | 220 | 90 | 490 | 12 h |
+| Cerisier | Légendaire | 400 | 160 | 880 | 35 h |
+
+Les heures de focus cumulées ouvrent des parcelles (2 au départ, 6 à 50 h) et
+débloquent les espèces. Une plante arrivée à maturité se cueille : elle rejoint la
+collection et libère sa parcelle.
+
+Les sprites des plantes sont dessinés en pixels dans `src/garden/plants.ts`, sur
+une grille de 16×16 validée par les tests.
+
 ## Raccourcis clavier
 
 - **Barre espace** : démarrer / mettre en pause

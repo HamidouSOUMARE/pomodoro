@@ -1,0 +1,212 @@
+.view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-9);
+}
+
+/* ---------- bandeau de progression ---------- */
+.summary {
+  background: var(--color-panel-alt);
+  border: var(--border-pixel);
+  box-shadow: var(--shadow-panel);
+  padding: var(--space-7);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.summaryTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.rayons {
+  font-family: var(--font-pixel);
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+}
+
+.focusTime {
+  color: var(--color-ink-soft);
+}
+
+.nextGoal {
+  color: var(--color-ink-soft);
+  line-height: var(--leading-tight);
+}
+
+/* ---------- titres de section ---------- */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.sectionTitle {
+  font-family: var(--font-pixel);
+  font-size: var(--text-2xs);
+  color: var(--color-ink-soft);
+  letter-spacing: var(--tracking-widest);
+}
+
+/* ---------- parcelles ---------- */
+.plots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-6);
+}
+
+.plot {
+  background: var(--color-panel-alt);
+  border: var(--border-pixel);
+  box-shadow: var(--shadow-mini);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.plotName {
+  line-height: var(--leading-tight);
+}
+
+.plotStage {
+  color: var(--color-ink-soft);
+  line-height: var(--leading-tight);
+}
+
+.plotCost {
+  color: var(--color-ink-soft);
+  line-height: var(--leading-tight);
+}
+
+.plotAction {
+  width: 100%;
+  margin-top: auto;
+}
+
+.mature {
+  color: var(--color-accent);
+}
+
+/* ---------- boutique ---------- */
+.shop {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.seed {
+  display: grid;
+  grid-template-columns: var(--size-plant-small) 1fr auto;
+  align-items: center;
+  gap: var(--space-5);
+  background: var(--color-panel-alt);
+  border: var(--border-pixel);
+  box-shadow: var(--shadow-mini);
+  padding: var(--space-4) var(--space-5);
+}
+
+.seedThumb {
+  width: var(--size-plant-small);
+}
+
+.seedInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.seedName {
+  line-height: var(--leading-tight);
+}
+
+.seedMeta {
+  color: var(--color-ink-soft);
+  line-height: var(--leading-tight);
+}
+
+.rarity {
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  font-size: var(--text-sm);
+}
+
+.commune {
+  color: var(--color-commune);
+}
+.peuCommune {
+  color: var(--color-peu-commune);
+}
+.rare {
+  color: var(--color-rare);
+}
+.legendaire {
+  color: var(--color-legendaire);
+}
+
+/* ---------- collection ---------- */
+.collection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+}
+
+.collected {
+  width: var(--size-plant-small);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.collectedCount {
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.missing .collectedCount {
+  color: var(--color-ink-soft);
+}
+
+/* ---------- paliers ---------- */
+.milestones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.milestone {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-5);
+  color: var(--color-ink-soft);
+  line-height: var(--leading-tight);
+}
+
+.milestoneHours {
+  font-variant-numeric: tabular-nums;
+  min-width: 5ch;
+}
+
+.reached {
+  color: var(--color-ink);
+}
+
+.reached .milestoneHours::before {
+  content: '✓ ';
+  color: var(--color-accent);
+}
+
+@media (min-width: 620px) {
+  .plots {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

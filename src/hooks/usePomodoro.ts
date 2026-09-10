@@ -23,6 +23,8 @@ interface Engine {
   /** secondes consommées par les étapes déjà closes */
   elapsedBefore: number;
   sessionDone: boolean;
+  /** aucun focus n'a été passé depuis le début de la session */
+  sessionClean: boolean;
   /** horodatage de fin de l'étape, null quand le minuteur est à l'arrêt */
   endAt: number | null;
 }
@@ -41,6 +43,19 @@ export interface PomodoroState {
   plan: SessionPlan | null;
 }
 
+/**
+ * Evenements emis par le minuteur. Le jardin s'y branche pour crediter les
+ * rayons ; le minuteur, lui, ne sait rien du jardin.
+ */
+export interface PomodoroHandlers {
+  /** un focus est alle jusqu'au bout */
+  onFocusDone?: (focusMinutes: number) => void;
+  /** l'enveloppe de session est bouclee ; `clean` = aucun focus passe */
+  onSessionDone?: (clean: boolean) => void;
+  /** un focus a ete passe avant la fin */
+  onFocusSkipped?: () => void;
+}
+
 export interface PomodoroActions {
   toggle: () => void;
   resetStep: () => void;
@@ -53,7 +68,10 @@ function secondsLeft(endAt: number): number {
   return Math.max(0, Math.round((endAt - Date.now()) / 1000));
 }
 
-export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions {
+export function usePomodoro(
+  settings: Settings,
+  handlers: PomodoroHandlers = {},
+): PomodoroState & PomodoroActions {
   const plan = useMemo(() => planSession(settings), [settings]);
 
   // miroirs synchrones : le moteur tourne dans des callbacks stables
@@ -61,6 +79,8 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
   settingsRef.current = settings;
   const planRef = useRef(plan);
   planRef.current = plan;
+  const handlersRef = useRef(handlers);
+  handlersRef.current = handlers;
 
   const engineRef = useRef<Engine>({
     mode: 'focus',
@@ -70,6 +90,7 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
     focusDone: 0,
     elapsedBefore: 0,
     sessionDone: false,
+    sessionClean: true,
     endAt: null,
   });
 
@@ -86,7 +107,7 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
 
   /** Clôture l'étape en cours puis enchaîne, ou termine la session. */
   const finish = useCallback(
-    (consumedSeconds: number) => {
+    (consumedSeconds: number, natural: boolean) => {
       const engine = engineRef.current;
       const current = settingsRef.current;
       const finished = engine.mode;
@@ -97,6 +118,12 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
       if (finished === 'focus') {
         engine.focusDone += 1;
         engine.completed += 1;
+        if (natural) {
+          handlersRef.current.onFocusDone?.(durationFor('focus', current) / 60);
+        } else {
+          engine.sessionClean = false;
+          handlersRef.current.onFocusSkipped?.();
+        }
       } else if (finished === 'long') {
         engine.completed = 0;
       }
@@ -108,6 +135,7 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
         engine.endAt = null;
         engine.remaining = 0;
         engine.sessionDone = true;
+        handlersRef.current.onSessionDone?.(engine.sessionClean);
         return;
       }
 
@@ -127,7 +155,7 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
     engine.remaining = secondsLeft(engine.endAt);
 
     if (engine.remaining <= 0) {
-      finish(durationFor(engine.mode, settingsRef.current));
+      finish(durationFor(engine.mode, settingsRef.current), true);
       commit();
       return;
     }
@@ -180,7 +208,7 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
     const total = durationFor(engine.mode, settingsRef.current);
     const left = engine.endAt === null ? engine.remaining : secondsLeft(engine.endAt);
     engine.endAt = null;
-    finish(total - left);
+    finish(total - left, false);
     commit();
   }, [commit, finish]);
 
@@ -198,6 +226,7 @@ export function usePomodoro(settings: Settings): PomodoroState & PomodoroActions
     engine.focusDone = 0;
     engine.elapsedBefore = 0;
     engine.sessionDone = false;
+    engine.sessionClean = true;
     openStep('focus', durationFor('focus', settingsRef.current), false);
     commit();
   }, [commit, openStep]);
