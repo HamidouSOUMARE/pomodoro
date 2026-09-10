@@ -4,6 +4,13 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 const THEME = '#1c241e';
 
+/**
+ * Banc d'essai : disponible en local et sur les preversions Vercel, retire du
+ * bundle de production. `VERCEL_ENV` vaut "production" | "preview" |
+ * "development" au moment du build, et n'est pas defini en local.
+ */
+const TEST_BENCH = process.env.VERCEL_ENV !== 'production';
+
 export default defineConfig({
   plugins: [
     react(),
@@ -35,6 +42,9 @@ export default defineConfig({
       devOptions: { enabled: false },
     }),
   ],
+  define: {
+    __TEST_BENCH__: JSON.stringify(TEST_BENCH),
+  },
   server: { port: 5173, strictPort: true },
   test: {
     environment: 'node',

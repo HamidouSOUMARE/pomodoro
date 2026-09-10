@@ -52,6 +52,9 @@ export function App() {
     grow,
     harvest,
     dismissGain,
+    testGrantRayons,
+    testAddFocusTime,
+    testReset,
   } = useGarden();
 
   const handlers = useMemo<PomodoroHandlers>(
@@ -160,7 +163,15 @@ export function App() {
       <div className={`${styles.layout} ${view === 'jardin' ? styles.wide : ''}`}>
         {view === 'jardin' ? (
           <main className={styles.garden}>
-            <GardenView garden={garden} onBuy={buy} onGrow={grow} onHarvest={harvest} />
+            <GardenView
+              garden={garden}
+              onBuy={buy}
+              onGrow={grow}
+              onHarvest={harvest}
+              onGrantRayons={testGrantRayons}
+              onAddFocusTime={testAddFocusTime}
+              onReset={testReset}
+            />
           </main>
         ) : null}
 

@@ -13,6 +13,7 @@ import { FINAL_STAGE, type GardenState, type Rarity, type SpeciesId } from '../.
 import { PixelButton } from '../PixelButton';
 import { PlantSprite } from './PlantSprite';
 import { Rayons } from './RayonIcon';
+import { TestBench } from './TestBench';
 import styles from './GardenView.module.css';
 
 const RARITY_CLASS: Record<Rarity, string> = {
@@ -34,9 +35,20 @@ interface GardenViewProps {
   onBuy: (species: SpeciesId) => void;
   onGrow: (plotIndex: number) => void;
   onHarvest: (plotIndex: number) => void;
+  onGrantRayons: (amount: number) => void;
+  onAddFocusTime: (seconds: number) => void;
+  onReset: () => void;
 }
 
-export function GardenView({ garden, onBuy, onGrow, onHarvest }: GardenViewProps) {
+export function GardenView({
+  garden,
+  onBuy,
+  onGrow,
+  onHarvest,
+  onGrantRayons,
+  onAddFocusTime,
+  onReset,
+}: GardenViewProps) {
   const openPlots = plotsUnlocked(garden.focusSeconds);
   const goal = nextMilestone(garden.focusSeconds);
   const hours = garden.focusSeconds / 3600;
@@ -219,6 +231,14 @@ export function GardenView({ garden, onBuy, onGrow, onHarvest }: GardenViewProps
           ))}
         </div>
       </section>
+
+      {__TEST_BENCH__ ? (
+        <TestBench
+          onGrantRayons={onGrantRayons}
+          onAddFocusTime={onAddFocusTime}
+          onReset={onReset}
+        />
+      ) : null}
     </div>
   );
 }

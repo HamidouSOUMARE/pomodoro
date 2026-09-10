@@ -1,4 +1,5 @@
 import {
+  EMPTY_GARDEN,
   canBuy,
   growthCostFor,
   plotsUnlocked,
@@ -104,6 +105,31 @@ export function harvestPlant(state: GardenState, plotIndex: number): GardenState
 /** Nombre total de plantes cueillies. */
 export function collectionSize(state: GardenState): number {
   return Object.values(state.collection).reduce((sum, count) => sum + (count ?? 0), 0);
+}
+
+/* ---------- banc d'essai ---------- */
+
+/** Crédite des rayons sans passer par le minuteur. */
+export function grantRayons(state: GardenState, amount: number): GardenState {
+  const gain = Math.max(0, Math.round(amount));
+  if (gain === 0) return state;
+  return {
+    ...state,
+    rayons: state.rayons + gain,
+    lifetimeRayons: state.lifetimeRayons + gain,
+  };
+}
+
+/** Avance le compteur de focus, pour atteindre un palier sans l'attendre. */
+export function addFocusTime(state: GardenState, seconds: number): GardenState {
+  const extra = Math.max(0, Math.round(seconds));
+  if (extra === 0) return state;
+  return { ...state, focusSeconds: state.focusSeconds + extra };
+}
+
+/** Repart d'un jardin vierge. */
+export function resetGarden(): GardenState {
+  return { ...EMPTY_GARDEN, plots: EMPTY_GARDEN.plots.map(() => null), collection: {} };
 }
 
 export function isMature(state: GardenState, plotIndex: number): boolean {

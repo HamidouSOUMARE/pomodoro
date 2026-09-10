@@ -160,3 +160,39 @@ describe('parcours complet d une paquerette', () => {
     expect(state.plots[0]).toEqual({ species: 'paquerette', stage: FINAL_STAGE });
   });
 });
+
+describe('banc d essai', () => {
+  it('credite des rayons et alimente le cumul', async () => {
+    const { grantRayons } = await import('./reducer');
+    const state = grantRayons(garden({ rayons: 10, lifetimeRayons: 10 }), 500);
+    expect(state.rayons).toBe(510);
+    expect(state.lifetimeRayons).toBe(510);
+  });
+
+  it('ignore un montant nul ou negatif', async () => {
+    const { grantRayons } = await import('./reducer');
+    const before = garden({ rayons: 10 });
+    expect(grantRayons(before, 0)).toBe(before);
+    expect(grantRayons(before, -100)).toBe(before);
+  });
+
+  it('avance le compteur de focus pour franchir un palier', async () => {
+    const { addFocusTime } = await import('./reducer');
+    const { plotsUnlocked } = await import('./economy');
+    const state = addFocusTime(garden(), 6 * 3600);
+    expect(state.focusSeconds).toBe(6 * 3600);
+    expect(plotsUnlocked(state.focusSeconds)).toBe(4);
+  });
+
+  it('vide entierement le jardin', async () => {
+    const { resetGarden } = await import('./reducer');
+    let state = plantSeed(garden({ rayons: 900, focusSeconds: 9999 }), 'paquerette');
+    state = { ...state, collection: { tulipe: 4 } };
+
+    const cleared = resetGarden();
+    expect(cleared.rayons).toBe(0);
+    expect(cleared.focusSeconds).toBe(0);
+    expect(cleared.collection).toEqual({});
+    expect(cleared.plots.every((p) => p === null)).toBe(true);
+  });
+});

@@ -1,12 +1,15 @@
 import { useCallback, useRef, useState } from 'react';
 import { SESSION_BONUS, type FocusReward } from '../garden/economy';
 import {
+  addFocusTime,
   breakStreak,
   grantFocus,
+  grantRayons,
   grantSessionBonus,
   growPlant,
   harvestPlant,
   plantSeed,
+  resetGarden,
 } from '../garden/reducer';
 import { loadGarden, saveGarden } from '../garden/storage';
 import type { GardenState, SpeciesId } from '../garden/types';
@@ -29,6 +32,12 @@ export interface UseGarden {
   grow: (plotIndex: number) => void;
   harvest: (plotIndex: number) => void;
   dismissGain: () => void;
+  /** banc d'essai : crédite des rayons sans minuteur */
+  testGrantRayons: (amount: number) => void;
+  /** banc d'essai : avance le compteur d'heures de focus */
+  testAddFocusTime: (seconds: number) => void;
+  /** banc d'essai : repart d'un jardin vierge */
+  testReset: () => void;
 }
 
 export function useGarden(): UseGarden {
@@ -79,6 +88,16 @@ export function useGarden(): UseGarden {
   const harvest = useCallback((plotIndex: number) => apply((s) => harvestPlant(s, plotIndex)), [apply]);
   const dismissGain = useCallback(() => setLastGain(null), []);
 
+  const testGrantRayons = useCallback(
+    (amount: number) => apply((s) => grantRayons(s, amount)),
+    [apply],
+  );
+  const testAddFocusTime = useCallback(
+    (seconds: number) => apply((s) => addFocusTime(s, seconds)),
+    [apply],
+  );
+  const testReset = useCallback(() => apply(resetGarden), [apply]);
+
   return {
     garden,
     lastGain,
@@ -89,5 +108,8 @@ export function useGarden(): UseGarden {
     grow,
     harvest,
     dismissGain,
+    testGrantRayons,
+    testAddFocusTime,
+    testReset,
   };
 }

@@ -1,0 +1,46 @@
+.bench {
+  border: var(--border-width) dashed var(--color-ink-soft);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.title {
+  font-family: var(--font-pixel);
+  font-size: var(--text-2xs);
+  color: var(--color-ink-soft);
+  letter-spacing: var(--tracking-widest);
+}
+
+.note {
+  color: var(--color-ink-soft);
+  line-height: var(--leading-tight);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.button {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  background: var(--color-bg);
+  border: var(--border-pixel);
+  box-shadow: var(--shadow-mini);
+  padding: var(--space-2) var(--space-5);
+  min-height: var(--tap-target);
+  cursor: pointer;
+}
+
+.button:active {
+  transform: translate(var(--press-offset-sm), var(--press-offset-sm));
+  box-shadow: 0 0 0 var(--color-shadow);
+}
+
+.danger {
+  color: var(--color-tomato);
+}
